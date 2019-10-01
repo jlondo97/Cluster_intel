@@ -6,7 +6,7 @@ ImageClass<P>::ImageClass(int const _width, int const _height)
 
   // Initialize a blank image
 
-  pixel = (P*)_mm_malloc(sizeof(P)*width*height, 64);
+  hbw_posix_memalign((void**)&pixel, 64, sizeof(P)*width*height);
 #pragma omp parallel for
   for (int i = 0; i < height; i++)
     for (int j = 0; j < width; j++)
@@ -68,7 +68,7 @@ ImageClass<P>::ImageClass(char const * file_name) {
   fclose(fp);
 
   // Convert from png_bytep to P
-  pixel = (P*)_mm_malloc(sizeof(P)*width*height, 64);
+  hbw_posix_memalign((void**)&pixel, 64, sizeof(P)*width*height);
 
 #pragma omp parallel for 
   for(int i = 0; i < height; i++)
@@ -83,15 +83,18 @@ ImageClass<P>::ImageClass(char const * file_name) {
 template<typename P>
 ImageClass<P>::~ImageClass() {
   // Deallocate image
-  _mm_free(pixel);
+  hbw_free(pixel);
 }
 
 
 
 template<typename P> 
-void ImageClass<P>::WriteToFile(char const * file_name) {
+void ImageClass<P>::WriteToFile(char * file_name, int const myRank, int const nRanks) {
 
   // Open file
+  char base[100];
+  strcpy(base, file_name);
+  sprintf(file_name, "%d-%s", myRank, base);
   FILE *fp = fopen(file_name, "wb");
   if (!fp) {
     printf("Could not open %s for writing\n", file_name);
@@ -131,3 +134,4 @@ void ImageClass<P>::WriteToFile(char const * file_name) {
 
 
 template class ImageClass<float>;
+template class ImageClass<png_byte>;

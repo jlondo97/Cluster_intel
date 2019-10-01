@@ -3,6 +3,7 @@
 
 #include <png.h>
 #include <omp.h>
+#include <hbwmalloc.h>
 
 template <typename P> 
 class ImageClass {
@@ -15,7 +16,7 @@ class ImageClass {
   ImageClass(char const * file_name);
   ~ImageClass();
 
-  void WriteToFile(char const * file_name);
+  void WriteToFile(char * file_name, int const myRank, int const nRanks);
 };
 
 #endif

@@ -5,6 +5,6 @@
 #include <omp.h>
 
 template<typename P>
-void ApplyStencil(ImageClass<P> & img_in, ImageClass<P> & img_out);
+void ApplyStencil(ImageClass<P> & img_in, ImageClass<P> & img_out, int const myRank, int const nRanks);
 
 #endif
